@@ -26,14 +26,14 @@ LIVRES_DE_BASE = [
     ("Aya de Yopougon", "Marguerite Abouet", "Ro", 3),
 ]
 
-# Connexion à la base de données (le fichier est créé s'il n'existe pas)
+# Connexion à la base de données 
 base = sqlite3.connect("bibliotheque_iit.db")
 base.row_factory = sqlite3.Row
 
 
-# =====================================================
-#  PETITS OUTILS
-# =====================================================
+
+# outils pour optimiser notre application
+
 def lire_nombre(message):
     """Demande un nombre, et redemande tant que ce n'est pas un nombre."""
     while True:
@@ -47,9 +47,8 @@ def format_date(texte_iso):
     return date.fromisoformat(texte_iso).strftime("%d/%m/%Y")
 
 
-# =====================================================
+
 #  BASE DE DONNÉES : 3 tableaux (livres, lecteurs, emprunts)
-# =====================================================
 def creer_base():
     base.executescript("""
     CREATE TABLE IF NOT EXISTS livres(
@@ -86,9 +85,9 @@ def creer_base():
     base.commit()
 
 
-# =====================================================
+
 #  LES LIVRES
-# =====================================================
+
 def afficher_livre(livre):
     """Une ligne par livre. Le stock s'écrit disponibles/total, par exemple 1/6."""
     epuise = "  (ÉPUISÉ)" if livre["disponibles"] == 0 else ""
@@ -96,7 +95,7 @@ def afficher_livre(livre):
           f"({livre['categorie']}) : {livre['disponibles']}/{livre['total']}{epuise}")
 
 def voir_livres():
-    print("\n--- LES LIVRES (Ro = roman, Doc = documents) ---")
+    print("\n--- LES LIVRES (Ro = roman, Doc = document) ---")
     print("Le stock s'écrit disponibles/total, par exemple 1/6.")
     for livre in base.execute("SELECT * FROM livres ORDER BY titre"):
         afficher_livre(livre)
@@ -131,9 +130,7 @@ def ajouter_livre():
     print(f"  -> « {titre} » ajouté ({exemplaires}/{exemplaires}).")
 
 
-# =====================================================
 #  LES LECTEURS
-# =====================================================
 def voir_lecteurs():
     print("\n--- LES LECTEURS ---")
     if base.execute("SELECT COUNT(*) FROM lecteurs").fetchone()[0] == 0:
@@ -163,9 +160,7 @@ def inscrire_lecteur():
     print(f"  -> {nom} est inscrit. Numéro de carte : {carte}")
 
 
-# =====================================================
 #  EMPRUNTER ET RENDRE
-# =====================================================
 def emprunter():
     if base.execute("SELECT COUNT(*) FROM lecteurs").fetchone()[0] == 0:
         print("  -> Aucun lecteur inscrit. Inscrivez d'abord un lecteur (option 4).")
@@ -257,10 +252,8 @@ def rendre_livre():
         print("  -> Livre rendu à temps. Aucune pénalité.")
     print(f"     Stock de « {livre['titre']} » : {livre['disponibles']}/{livre['total']}")
 
+#  MENU PRINCIPAL
 
-# =====================================================
-#  LE MENU PRINCIPAL
-# =====================================================
 def menu():
     creer_base()
     actions = {
